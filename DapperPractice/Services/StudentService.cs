@@ -8,6 +8,7 @@ namespace DapperPractice.Services
     public interface IStudentService
     {
         Task<IEnumerable<Student>> GetStudents();
+        Task SaveStudent(Student student);
     }
 
     public class StudentService : IStudentService
@@ -26,6 +27,14 @@ namespace DapperPractice.Services
                 var data = await db.GetListAsync<Student>();
                 return data;
 
+            }
+        }
+
+        public async Task SaveStudent(Student student)
+        {
+            using (IDbConnection db = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                await db.InsertAsync<Student>(student);
             }
         }
     }

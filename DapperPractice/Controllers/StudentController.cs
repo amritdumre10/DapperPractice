@@ -16,10 +16,12 @@ namespace DapperPractice.Controllers
     public class StudentController : Controller
     {
         private readonly IDbConnection _dbConnection;
+        private readonly IStudentService _studentService;
 
-        public StudentController(IDbConnection dbConnection)
+        public StudentController(IDbConnection dbConnection, IStudentService studentService)
         {
             _dbConnection = dbConnection;
+            _studentService = studentService;
         }
 
         // GET: Students
@@ -51,6 +53,10 @@ namespace DapperPractice.Controllers
         {
             return View();
         }
+        public IActionResult New()
+        {
+            return View();
+        }
 
         // POST: Students/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -58,6 +64,17 @@ namespace DapperPractice.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Age")] Student student)
+        {
+            if (ModelState.IsValid)
+            {
+                await _studentService.SaveStudent(student);
+                return RedirectToAction(nameof(Index));
+            }
+            return View(student);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> New([Bind("Id,Name,Age")] Student student)
         {
             if (ModelState.IsValid)
             {
